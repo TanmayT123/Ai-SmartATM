@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart ATM</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            font-family: "Segoe UI", sans-serif;
+            color: #00ffcc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .atm-panel {
+            background-color: #000;
+            padding: 30px;
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background-color: #00ffcc;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00bfa6;
+        }
+
+        .form-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input {
+            margin-top: 10px;
+            padding: 8px;
+            width: 90%;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .form-section button {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>💳 Welcome to Smart ATM</h1>
+    <div class="atm-panel">
+        <button onclick="showSection('createAccount')">➕ Create Account</button>
+        <button onclick="showSection('deposit')">💰 Deposit</button>
+        <button onclick="showSection('withdraw')">🏧 Withdraw</button>
+        <button onclick="showSection('balance')">📊 Check Balance</button>
+        <button onclick="showSection('generateQR')">📷 QR Transaction</button>
+
+        <div id="createAccount" class="form-section">
+            <form action="/create-account" method="POST">
+                <input type="text" name="phone" placeholder="Phone" required>
+                <input type="password" name="pin" placeholder="PIN" required>
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+
+        <div id="deposit" class="form-section">
+            <form action="/deposit" method="POST">
+                <input type="text" name="phone" placeholder="Phone">
+                <input type="number" name="amount" placeholder="Amount">
+                <button type="submit">Deposit</button>
+            </form>
+        </div>
+
+        <div id="withdraw" class="form-section">
+            <form action="/withdraw" method="POST">
+                <input type="text" name="phone" placeholder="Phone">
+                <input type="number" name="amount" placeholder="Amount">
+                <button type="submit">Withdraw</button>
+            </form>
+        </div>
+
+        <div id="balance" class="form-section">
+            <form action="/balance" method="GET">
+                <input type="text" name="phone" placeholder="Phone">
+                <button type="submit">Check Balance</button>
+            </form>
+        </div>
+
+        <div id="generateQR" class="form-section">
+            <form action="/generate-qr" method="GET">
+                <input type="text" name="phone" placeholder="Phone">
+                <button type="submit">Generate QR</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showSection(id) {
+            const sections = document.querySelectorAll(".form-section");
+            sections.forEach(section => section.style.display = "none");
+
+            document.getElementById(id).style.display = "block";
+        }
+    </script>
+</body>
+</html>
