@@ -72,7 +72,6 @@
         <button onclick="showSection('deposit')">💰 Deposit</button>
         <button onclick="showSection('withdraw')">🏧 Withdraw</button>
         <button onclick="showSection('balance')">📊 Check Balance</button>
-        <button onclick="showSection('generateQR')">📷 QR Transaction</button>
 
         <div id="createAccount" class="form-section">
             <form action="/create-account" method="POST">
@@ -102,13 +101,6 @@
             <form action="/balance" method="GET">
                 <input type="text" name="phone" placeholder="Phone">
                 <button type="submit">Check Balance</button>
-            </form>
-        </div>
-
-        <div id="generateQR" class="form-section">
-            <form action="/generate-qr" method="GET">
-                <input type="text" name="phone" placeholder="Phone">
-                <button type="submit">Generate QR</button>
             </form>
         </div>
     </div>
