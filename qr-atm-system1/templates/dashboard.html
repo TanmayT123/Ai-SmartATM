@@ -73,9 +73,7 @@
 </head>
 <body>
     <h1>💳 Welcome to Smart ATM</h1>
-    <div class="balance-display">
-        🧾 Your Current Balance: ₹{{ balance }}
-    </div>
+   
     <div class="atm-panel">
         <button onclick="showSection('createAccount')">➕ Create Account</button>
         <button onclick="showSection('deposit')">💰 Deposit</button>
@@ -108,8 +106,9 @@
 
         <div id="balance" class="form-section">
             <form action="/balance" method="GET">
-                <input type="text" name="phone" placeholder="Phone">
-                <button type="submit">Check Balance</button>
+                <div class="balance-display">
+                  🧾 Your Current Balance: ₹{{ balance }}
+                </div>
             </form>
         </div>
     </div>

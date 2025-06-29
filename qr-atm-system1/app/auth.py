@@ -31,7 +31,7 @@ def register():
             'phone': phone,
             'email': email,
             'pin': pin,
-            'balance': 0  # 💰 Initial balance
+            'balance': 0  
         })
 
         flash('Registration successful!')
