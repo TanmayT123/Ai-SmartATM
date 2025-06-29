@@ -1,4 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from bson.objectid import ObjectId  # ✅ Added to work with MongoDB _id
 from app.db import get_db
 
 auth_bp = Blueprint('auth', __name__)
@@ -15,7 +16,7 @@ def register():
         phone = request.form.get('phone')
         email = request.form.get('email')
         pin = request.form.get('pin')
-
+        
         db = get_db()
         users = db['users']
 
@@ -29,7 +30,8 @@ def register():
             'lastname': lastname,
             'phone': phone,
             'email': email,
-            'pin': pin
+            'pin': pin,
+            'balance': 0  # 💰 Initial balance
         })
 
         flash('Registration successful!')
@@ -62,7 +64,13 @@ def login():
 @auth_bp.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        return render_template('dashboard.html')
-    else:
-        flash("Please log in first.")
-        return redirect(url_for('auth.login'))
+        db = get_db()
+        users = db['users']
+        user = users.find_one({'_id': ObjectId(session['user_id'])})
+
+        if user:
+            balance = user.get('balance', 0)
+            return render_template('dashboard.html', balance=balance)
+        
+    flash("Please log in first.")
+    return redirect(url_for('auth.login'))

@@ -16,7 +16,13 @@
 
         h1 {
             font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .balance-display {
+            font-size: 1.2rem;
             margin-bottom: 30px;
+            color: #ffffff;
         }
 
         .atm-panel {
@@ -67,6 +73,9 @@
 </head>
 <body>
     <h1>💳 Welcome to Smart ATM</h1>
+    <div class="balance-display">
+        🧾 Your Current Balance: ₹{{ balance }}
+    </div>
     <div class="atm-panel">
         <button onclick="showSection('createAccount')">➕ Create Account</button>
         <button onclick="showSection('deposit')">💰 Deposit</button>
