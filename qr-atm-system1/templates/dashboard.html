@@ -76,8 +76,15 @@
    
     <div class="atm-panel">
         <button onclick="showSection('createAccount')">➕ Create Account</button>
-        <button onclick="showSection('deposit')">💰 Deposit</button>
-        <button onclick="showSection('withdraw')">🏧 Withdraw</button>
+        <button onclick="redirectToAction('deposit')">💰 Deposit</button>
+<button onclick="redirectToAction('withdraw')">🏧 Withdraw</button>
+
+<script>
+    function redirectToAction(actionType) {
+        window.location.href = `/select_transaction/${actionType}`;
+    }
+</script>
+
         <button onclick="showSection('balance')">📊 Check Balance</button>
 
         <div id="createAccount" class="form-section">
@@ -89,7 +96,7 @@
         </div>
 
         <div id="deposit" class="form-section">
-            <form action="/deposit" method="POST">
+            <form action="select_transaction.html" method="POST">
                 <input type="text" name="phone" placeholder="Phone">
                 <input type="number" name="amount" placeholder="Amount">
                 <button type="submit">Deposit</button>
@@ -97,7 +104,7 @@
         </div>
 
         <div id="withdraw" class="form-section">
-            <form action="/withdraw" method="POST">
+            <form action="select_transaction.html" method="POST">
                 <input type="text" name="phone" placeholder="Phone">
                 <input type="number" name="amount" placeholder="Amount">
                 <button type="submit">Withdraw</button>
@@ -107,7 +114,7 @@
         <div id="balance" class="form-section">
             <form action="/balance" method="GET">
                 <div class="balance-display">
-                  🧾 Your Current Balance: ₹{{ balance }}
+                    🧾 Your Current Balance: ₹{{ balance }}
                 </div>
             </form>
         </div>
@@ -123,3 +130,4 @@
     </script>
 </body>
 </html>
+<!-- This HTML template is designed for a Smart ATM dashboard, allowing users to create accounts, deposit, withdraw, and check their balance. -->

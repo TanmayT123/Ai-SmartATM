@@ -14,8 +14,12 @@ def home():
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        return render_template('dashboard.html')
+        db = get_db()
+        user = db['users'].find_one({'_id': ObjectId(session['user_id'])})
+        balance = user.get('balance', 0) if user else 0
+        return render_template('dashboard.html', balance=balance)
     return redirect(url_for('auth.login'))
+
 
 @app.route('/balance')
 def check_balance():
@@ -26,6 +30,17 @@ def check_balance():
         return render_template('dashboard.html', balance=balance)
     return redirect(url_for('auth.login'))
 
+@app.route('/select_transaction/<action_type>')
+def select_transaction(action_type):
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+
+    if action_type.lower() not in ['deposit', 'withdraw']:
+        return "Invalid transaction type", 404
+
+    return render_template('select_transaction.html', action_type=action_type.lower())
+
+
 # Optional: logout route
 @app.route('/logout')
 def logout():
@@ -34,3 +49,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
