@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from bson.objectid import ObjectId
 from app.db import get_db
 from app.auth import auth_bp
-from app.facerec import verify_face
+from app.facerec import verify_face_from_base64
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'

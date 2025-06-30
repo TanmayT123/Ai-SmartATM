@@ -1,41 +1,51 @@
 # app/facerec.py
-import cv2
+
 import face_recognition
 import numpy as np
-from .db import get_db
+import base64
+import cv2
+from app.db import get_db
+from bson.objectid import ObjectId
 
-def capture_face():
-    cam = cv2.VideoCapture(0)
-    while True:
-        ret, frame = cam.read()
-        cv2.imshow("Face Capture - Press 'q' to capture", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cam.release()
-    cv2.destroyAllWindows()
+def verify_face_from_base64(user_id, base64_img):
+    # Decode the base64 image to an array
+    img_bytes = base64.b64decode(base64_img)
+    np_arr = np.frombuffer(img_bytes, dtype=np.uint8)
+    frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-    faces = face_recognition.face_locations(frame)
-    if faces:
-        encoding = face_recognition.face_encodings(frame, faces)[0]
-        return encoding
-    return None
+    # Convert image from BGR to RGB
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-def register_face(username):
-    db = get_db()
-    encoding = capture_face()
-    if encoding is not None:
-        db.users.update_one({"username": username}, {"$set": {"face_encoding": encoding.tolist()}})
-        return True
-    return False
-
-def verify_face(username):
-    db = get_db()
-    user = db.users.find_one({"username": username})
-    if not user or "face_encoding" not in user:
+    # Detect face and encode
+    faces = face_recognition.face_locations(rgb_frame)
+    if not faces:
         return False
 
-    stored_encoding = np.array(user["face_encoding"])
-    encoding = capture_face()
-    if encoding is not None:
-        return face_recognition.compare_faces([stored_encoding], encoding)[0]
-    return False
+    encoding = face_recognition.face_encodings(rgb_frame, faces)[0]
+
+    # Fetch stored encoding from DB
+    db = get_db()
+    users = db['users']
+    user = users.find_one({'_id': ObjectId(user_id)})
+    if not user or 'face_encoding' not in user:
+        return False
+
+    stored_encoding = np.array(user['face_encoding'])
+
+    # Compare
+    results = face_recognition.compare_faces([stored_encoding], encoding)
+    return results[0]
+
+def save_face_encoding(user_id, frame):
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    faces = face_recognition.face_locations(rgb_frame)
+    if not faces:
+        return False
+
+    encoding = face_recognition.face_encodings(rgb_frame, faces)[0]
+    db = get_db()
+    db.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {'face_encoding': encoding.tolist()}}
+    )
+    return True
