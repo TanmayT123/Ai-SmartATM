@@ -1,5 +1,3 @@
-# app/facerec.py
-
 import face_recognition
 import numpy as np
 import base64

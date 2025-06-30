@@ -1,5 +1,3 @@
-# app/auth.py
-
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session, jsonify
 from bson.objectid import ObjectId
 from app.db import get_db
