@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Face</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #00ffcc;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 30px;
+        }
+        form, video, canvas, button {
+            margin: 20px auto;
+            display: block;
+        }
+        input, button {
+            width: 300px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #00ffcc;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        #video, #canvas {
+            border-radius: 10px;
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+        }
+        #message {
+            margin-top: 15px;
+            min-height: 20px;
+            font-weight: bold;
+        }
+        #capturedPreview {
+            margin-top: 10px;
+            max-width: 300px;
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Register Your Face</h1>
+
+    <div id="verify-section">
+        <form id="authForm">
+            <input type="text" id="phone" placeholder="Enter Phone" required autocomplete="off" />
+            <input type="password" id="pin" placeholder="Enter PIN" required autocomplete="off" />
+            <button type="submit" id="verifyBtn">Verify & Start Camera</button>
+        </form>
+    </div>
+
+    <video id="video" autoplay style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <button id="captureBtn" style="display:none;">📸 Capture & Register</button>
+
+    <!-- Optional captured image preview -->
+    <img id="capturedPreview" alt="Captured face preview" />
+
+    <div id="message"></div>
+
+    <script>
+        const authForm = document.getElementById('authForm');
+        const phoneInput = document.getElementById('phone');
+        const pinInput = document.getElementById('pin');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const messageDiv = document.getElementById('message');
+        const capturedPreview = document.getElementById('capturedPreview');
+        const verifyBtn = document.getElementById('verifyBtn');
+
+        let stream = null;
+
+        function showMessage(msg, isError = false) {
+            messageDiv.textContent = msg;
+            messageDiv.style.color = isError ? '#ff4444' : '#00ffcc';
+        }
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            showMessage('');
+            verifyBtn.disabled = true;
+
+            const phone = phoneInput.value.trim();
+            const pin = pinInput.value.trim();
+
+            if (!phone || !pin) {
+                showMessage("Please enter phone and PIN", true);
+                verifyBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const res = await fetch('/verify-user', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({phone, pin})
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('verify-section').style.display = 'none';
+                    video.style.display = 'block';
+                    captureBtn.style.display = 'inline-block';
+                    capturedPreview.style.display = 'none';
+
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = stream;
+                    showMessage('Camera started. Please capture your face.');
+                } else {
+                    showMessage('Invalid phone or PIN!', true);
+                }
+            } catch (err) {
+                showMessage('Error verifying user: ' + err.message, true);
+            }
+
+            verifyBtn.disabled = false;
+        });
+
+        captureBtn.addEventListener('click', () => {
+            if (!stream) {
+                showMessage('Webcam not started', true);
+                return;
+            }
+
+            const phone = phoneInput.value.trim();
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageBase64 = canvas.toDataURL('image/png');
+
+            // Show preview
+            capturedPreview.src = imageBase64;
+            capturedPreview.style.display = 'block';
+
+            showMessage('Uploading face image...');
+
+            captureBtn.disabled = true;
+
+            fetch('/register-face', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    phone: phone,
+                    image: imageBase64
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                showMessage(data.message, !data.message.includes('successfully'));
+                if (data.message.includes('successfully')) {
+                    // Stop webcam & reset UI after short delay
+                    setTimeout(() => {
+                        if (stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                        }
+                        video.style.display = 'none';
+                        captureBtn.style.display = 'none';
+                        capturedPreview.style.display = 'none';
+                        document.getElementById('verify-section').style.display = 'block';
+                        phoneInput.value = '';
+                        pinInput.value = '';
+                        showMessage('');
+                    }, 2000);
+                }
+            })
+            .catch(err => {
+                showMessage('Error registering face: ' + err.message, true);
+            })
+            .finally(() => {
+                captureBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
