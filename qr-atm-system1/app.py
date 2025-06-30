@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from bson.objectid import ObjectId
-from app.db import get_db  # Ensure this is defined to connect to MongoDB
+from app.db import get_db
 from app.auth import auth_bp
+from app.facerec import verify_face
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Set a secure secret key
+app.secret_key = 'your_secret_key'
 app.register_blueprint(auth_bp, url_prefix='/')
 
 @app.route('/')
@@ -14,12 +15,8 @@ def home():
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        db = get_db()
-        user = db['users'].find_one({'_id': ObjectId(session['user_id'])})
-        balance = user.get('balance', 0) if user else 0
-        return render_template('dashboard.html', balance=balance)
+        return render_template('dashboard.html', balance=None)
     return redirect(url_for('auth.login'))
-
 
 @app.route('/balance')
 def check_balance():
@@ -40,8 +37,36 @@ def select_transaction(action_type):
 
     return render_template('select_transaction.html', action_type=action_type.lower())
 
+@app.route('/deposit')
+def deposit():
+    if 'user_id' not in session:
+        return redirect('/login')
 
-# Optional: logout route
+    db = get_db()
+    user = db['users'].find_one({'_id': ObjectId(session['user_id'])})
+    if not user:
+        return redirect('/login')
+
+    username = user.get('username')
+    if username and verify_face(username):
+        return render_template('deposit.html')
+    return "❌ Face verification failed."
+
+@app.route('/withdraw')
+def withdraw():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    db = get_db()
+    user = db['users'].find_one({'_id': ObjectId(session['user_id'])})
+    if not user:
+        return redirect('/login')
+
+    username = user.get('username')
+    if username and verify_face(username):
+        return render_template('withdraw.html')
+    return "❌ Face verification failed."
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -49,4 +74,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
