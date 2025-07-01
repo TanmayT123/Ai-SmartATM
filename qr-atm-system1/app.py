@@ -175,4 +175,6 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, use_reloader=False, threaded=False)
+
+ # this was been used previously [app.run(debug=True)] in the upper line
