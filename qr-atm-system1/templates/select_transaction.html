@@ -1,76 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Select Transaction Type</title>
+    <title>Select Transaction</title>
     <style>
-        /* Reset & base */
-        * {
-            box-sizing: border-box;
-        }
         body {
-            margin: 0;
-            background-color: #1a1a1a; /* match dashboard background */
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            color: #00ffcc; /* dashboard text color */
+            background-color: #1a1a1a;
+            font-family: "Segoe UI", sans-serif;
+            color: #00ffcc;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
+            padding: 30px;
         }
 
         h2 {
             font-size: 2rem;
-            margin-bottom: 30px;
-            font-weight: 700;
-            color: #dce4e3;
-            text-align: center;
-           
+            margin-bottom: 20px;
         }
 
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 320px;
+        form {
+            margin: 10px 0;
         }
 
-        a {
-            padding: 15px 0;
-            text-decoration: none;
-            background-color: #000000; /* pure black for button */
-            color: #00ffcc;
-            border: 2px solid #00ffcc;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-align: center;
-            box-shadow: 0 0 6px #00ffcc55;
-            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-            user-select: none;
-        }
-
-        a:hover, a:focus {
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
             background-color: #00ffcc;
-            color: #000000;
-            box-shadow: 0 0 15px #00ffccdd;
-            outline: none;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        a:active {
+        button:hover {
             background-color: #00bfa6;
-            box-shadow: 0 0 10px #00bfa6cc;
         }
     </style>
 </head>
 <body>
-    <h2>Select Transaction Type !</h2>
-    <div class="options">
-        <a href="#" tabindex="1">Card Transaction</a>
-        <a href="#" tabindex="2">QR-based Transaction</a>
-        <a href="facial_auth.html" tabindex="3">Facial Authentication</a>
-    </div>
-</body> 
+    <h2>Select Transaction</h2>
+    <!-- Go to Face Match Page -->
+    <form action="/facial-auth" method="get">
+        <button type="submit">🧠 Facial Recognition</button>
+    </form>
+
+    <!-- Back to Dashboard -->
+    <form action="/dashboard" method="get">
+        <button type="submit">🔙 Back to Dashboard</button>
+    </form>
+</body>
 </html>
