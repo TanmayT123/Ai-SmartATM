@@ -3,69 +3,64 @@ from app.db import get_db
 import base64
 import cv2
 import numpy as np
+import face_recognition
 
 facerec_bp = Blueprint('facerec_bp', __name__)
 
-@facerec_bp.route('/register-face-page')
-def register_face_page():
-    return render_template('register_face.html')
+# Route to open the match face page (Webcam preview + verify button)
+@facerec_bp.route('/match_face')
+def match_face_page():
+    return render_template('match_face.html')
 
-@facerec_bp.route('/verify-user', methods=['POST'])
-def verify_user():
-    data = request.json
-    phone = data.get('phone')
-    pin = data.get('pin')
 
+# Standalone function: Can be reused elsewhere (like app.py or other routes)
+def verify_face_from_base64(phone, image_base64):
     db = get_db()
-    user = db.users.find_one({"phone": phone, "pin": pin})
-    return jsonify({"success": bool(user)})
+    record = db.face_data.find_one({"phone": phone})
+    if not record:
+        return False, "❌ Face not registered. Please register first."
 
-@facerec_bp.route('/register-face', methods=['POST'])
-def register_face():
-    data = request.json
-    phone = data.get("phone")
+    try:
+        # Decode image from base64
+        input_bytes = base64.b64decode(image_base64.split(',')[1])
+        input_np = np.frombuffer(input_bytes, np.uint8)
+        input_img = cv2.imdecode(input_np, cv2.IMREAD_COLOR)
+
+        # Get face encoding
+        input_encodings = face_recognition.face_encodings(input_img)
+        if not input_encodings:
+            return False, "❌ No face detected in image."
+
+        input_encoding = input_encodings[0]
+        stored_encoding = np.array(record['encoding'])
+
+        # Compare faces
+        matches = face_recognition.compare_faces([stored_encoding], input_encoding)
+        return (True, "✅ Face verified!") if matches[0] else (False, "❌ Face does not match.")
+
+    except Exception as e:
+        return False, f"❌ Error during verification: {str(e)}"
+
+
+# API Route to verify the face from frontend
+@facerec_bp.route('/verify-face', methods=['POST'])
+def verify_face():
+    from bson.objectid import ObjectId  # Add this at the top if not imported
+    from flask import session
+
+    data = request.get_json()
     image_data = data.get("image")
 
-    # Decode base64 to image (optional - here just to validate)
-    img_bytes = base64.b64decode(image_data.split(',')[1])
-    np_arr = np.frombuffer(img_bytes, np.uint8)
-    img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    if 'user_id' not in session or not image_data:
+        return jsonify({"success": False, "message": "Not authenticated or image missing"})
 
     db = get_db()
-    db.face_data.insert_one({
-        "phone": phone,
-        "image": image_data
-    })
-    return jsonify({"message": "Face registered successfully"})
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return jsonify({"success": False, "message": "User not found in session"})
 
-def verify_face_from_base64(phone, image_base64):
-    """
-    Stub example for face verification by comparing with registered data.
+    phone = user['phone']
 
-    Args:
-        phone (str): User phone number to find registered face.
-        image_base64 (str): Base64 encoded face image to verify.
-
-    Returns:
-        bool: True if face matches, False otherwise.
-    """
-    db = get_db()
-    user_face = db.face_data.find_one({"phone": phone})
-
-    if not user_face:
-        return False
-
-    # Decode input image
-    input_img_bytes = base64.b64decode(image_base64.split(',')[1])
-    input_np_arr = np.frombuffer(input_img_bytes, np.uint8)
-    input_img = cv2.imdecode(input_np_arr, cv2.IMREAD_COLOR)
-
-    # Decode registered image
-    reg_img_bytes = base64.b64decode(user_face["image"].split(',')[1])
-    reg_np_arr = np.frombuffer(reg_img_bytes, np.uint8)
-    reg_img = cv2.imdecode(reg_np_arr, cv2.IMREAD_COLOR)
-
-    # Dummy check: compare image shapes
-    if input_img.shape == reg_img.shape:
-        return True
-    return False
+    # Reuse verification logic
+    success, message = verify_face_from_base64(phone, image_data)
+    return jsonify({"success": success, "message": message})

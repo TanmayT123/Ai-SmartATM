@@ -41,9 +41,10 @@
 <body>
     <h2>Select Transaction</h2>
     <!-- Go to Face Match Page -->
-    <form action="/facial-auth" method="get">
-        <button type="submit">🧠 Facial Recognition</button>
-    </form>
+    <a href="{{ url_for('facerec_bp.match_face_page') }}">
+  <button class="button">Verify Face to Proceed</button>
+</a>
+
 
     <!-- Back to Dashboard -->
     <form action="/dashboard" method="get">
