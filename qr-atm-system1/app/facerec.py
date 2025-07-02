@@ -13,7 +13,7 @@ def match_face_page():
     return render_template('match_face.html')
 
 
-# Standalone function: Can be reused elsewhere (like app.py or other routes)
+# ✅ Updated function: Now includes proper face distance comparison
 def verify_face_from_base64(phone, image_base64):
     db = get_db()
     record = db.face_data.find_one({"phone": phone})
@@ -26,17 +26,28 @@ def verify_face_from_base64(phone, image_base64):
         input_np = np.frombuffer(input_bytes, np.uint8)
         input_img = cv2.imdecode(input_np, cv2.IMREAD_COLOR)
 
-        # Get face encoding
-        input_encodings = face_recognition.face_encodings(input_img)
+        # Convert image to RGB
+        rgb_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB)
+
+        # Get face encoding from input image
+        input_encodings = face_recognition.face_encodings(rgb_img)
         if not input_encodings:
             return False, "❌ No face detected in image."
 
         input_encoding = input_encodings[0]
         stored_encoding = np.array(record['encoding'])
 
-        # Compare faces
-        matches = face_recognition.compare_faces([stored_encoding], input_encoding)
-        return (True, "✅ Face verified!") if matches[0] else (False, "❌ Face does not match.")
+        # Compare faces using distance
+        distance = face_recognition.face_distance([stored_encoding], input_encoding)[0]
+        print(f"ℹ️ Face distance: {distance:.4f}")
+
+        # Define match threshold
+        threshold = 0.5
+
+        if distance <= threshold:
+            return True, "✅ Face verified!"
+        else:
+            return False, "❌ Face does not match."
 
     except Exception as e:
         return False, f"❌ Error during verification: {str(e)}"
@@ -45,7 +56,7 @@ def verify_face_from_base64(phone, image_base64):
 # API Route to verify the face from frontend
 @facerec_bp.route('/verify-face', methods=['POST'])
 def verify_face():
-    from bson.objectid import ObjectId  # Add this at the top if not imported
+    from bson.objectid import ObjectId
     from flask import session
 
     data = request.get_json()
