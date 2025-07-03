@@ -167,9 +167,6 @@ def verify_face():
     else:
         return jsonify({"success": False, "message": "Face verification failed"})
 
-from app.facerec import facerec_bp
-app.register_blueprint(facerec_bp)
-
 
 @app.route('/logout')
 def logout():
