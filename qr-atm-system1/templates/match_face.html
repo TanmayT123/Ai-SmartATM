@@ -50,7 +50,7 @@
 
     function verifyFace() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataURL = canvas.toDataURL('image/png');
+      const dataURL = canvas.toDataURL('image/jpeg'); // ✅ Changed to JPEG
 
       const phone = prompt("📱 Enter your registered phone:");
 

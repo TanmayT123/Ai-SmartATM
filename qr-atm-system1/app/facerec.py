@@ -1,5 +1,6 @@
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify, session
 from app.db import get_db
+from bson.objectid import ObjectId
 import base64
 import cv2
 import numpy as np
@@ -7,29 +8,87 @@ import face_recognition
 
 facerec_bp = Blueprint('facerec_bp', __name__)
 
-# Route to open the match face page (Webcam preview + verify button)
+# ✅ Route to show match face page (camera + match)
 @facerec_bp.route('/match_face')
 def match_face_page():
     return render_template('match_face.html')
 
 
-# ✅ Updated function: Now includes proper face distance comparison
+# ✅ Route to open face registration page
+@facerec_bp.route('/register-face-page')
+def register_face_page():
+    return render_template('register_face.html')
+
+
+# ✅ Face Registration API
+@facerec_bp.route('/register-face', methods=['POST'])
+def register_face():
+    data = request.json
+    phone = data.get("phone")
+    image_data = data.get("image")
+
+    if not phone or not image_data:
+        return jsonify({"success": False, "message": "Phone or image missing."})
+
+    try:
+        # Decode base64
+        img_bytes = base64.b64decode(image_data.split(',')[1])
+        np_arr = np.frombuffer(img_bytes, np.uint8)
+        img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        if img_np is None:
+            return jsonify({"success": False, "message": "Image decode failed. Possibly invalid format."})
+
+        # Ensure image is 3-channel (RGB)
+        if len(img_np.shape) != 3 or img_np.shape[2] != 3:
+            return jsonify({"success": False, "message": "Image is not in expected RGB format."})
+
+        rgb_img = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
+
+        # Detect and encode face
+        encodings = face_recognition.face_encodings(rgb_img)
+        if not encodings:
+            return jsonify({"success": False, "message": "No face detected in image."})
+
+        encoding = encodings[0].tolist()
+
+        # Store in DB
+        db = get_db()
+        db.face_data.update_one(
+            {"phone": phone},
+            {"$set": {"encoding": encoding}},
+            upsert=True
+        )
+
+        return jsonify({"success": True, "message": "✅ Face registered successfully!"})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": f"❌ Error during registration: {str(e)}"})
+
+
+# ✅ Reusable verification logic
 def verify_face_from_base64(phone, image_base64):
     db = get_db()
     record = db.face_data.find_one({"phone": phone})
-    if not record:
+    if not record or "encoding" not in record:
         return False, "❌ Face not registered. Please register first."
 
     try:
-        # Decode image from base64
+        # Decode and convert image
         input_bytes = base64.b64decode(image_base64.split(',')[1])
         input_np = np.frombuffer(input_bytes, np.uint8)
         input_img = cv2.imdecode(input_np, cv2.IMREAD_COLOR)
 
-        # Convert image to RGB
+        if input_img is None:
+            return False, "❌ Error decoding image"
+
+        # Check if it’s valid 3-channel image
+        if len(input_img.shape) != 3 or input_img.shape[2] != 3:
+            return False, "❌ Unsupported image type. Must be RGB 3-channel image."
+
         rgb_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB)
 
-        # Get face encoding from input image
+        # Get encoding from input image
         input_encodings = face_recognition.face_encodings(rgb_img)
         if not input_encodings:
             return False, "❌ No face detected in image."
@@ -37,28 +96,17 @@ def verify_face_from_base64(phone, image_base64):
         input_encoding = input_encodings[0]
         stored_encoding = np.array(record['encoding'])
 
-        # Compare faces using distance
-        distance = face_recognition.face_distance([stored_encoding], input_encoding)[0]
-        print(f"ℹ️ Face distance: {distance:.4f}")
-
-        # Define match threshold
-        threshold = 0.5
-
-        if distance <= threshold:
-            return True, "✅ Face verified!"
-        else:
-            return False, "❌ Face does not match."
+        # Compare encodings
+        match = face_recognition.compare_faces([stored_encoding], input_encoding)[0]
+        return (True, "✅ Face verified!") if match else (False, "❌ Face does not match.")
 
     except Exception as e:
         return False, f"❌ Error during verification: {str(e)}"
 
 
-# API Route to verify the face from frontend
+# ✅ API endpoint for face verification
 @facerec_bp.route('/verify-face', methods=['POST'])
 def verify_face():
-    from bson.objectid import ObjectId
-    from flask import session
-
     data = request.get_json()
     image_data = data.get("image")
 
@@ -71,7 +119,5 @@ def verify_face():
         return jsonify({"success": False, "message": "User not found in session"})
 
     phone = user['phone']
-
-    # Reuse verification logic
     success, message = verify_face_from_base64(phone, image_data)
     return jsonify({"success": success, "message": message})
