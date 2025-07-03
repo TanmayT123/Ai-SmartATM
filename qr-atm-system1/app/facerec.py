@@ -1,71 +1,55 @@
-from flask import Blueprint, request, render_template, jsonify
-from app.db import get_db
+import face_recognition
+import numpy as np
 import base64
 import cv2
-import numpy as np
+from io import BytesIO
+from PIL import Image
+from app.face_store import save_user_encoding, get_all_encodings
 
-facerec_bp = Blueprint('facerec_bp', __name__)
+# ---------------------------
+# Helper: Convert base64 → image (RGB)
+# ---------------------------
+def decode_base64_image(base64_string):
+    try:
+        header, encoded = base64_string.split(",", 1)
+    except ValueError:
+        encoded = base64_string
+    img_data = base64.b64decode(encoded)
+    image = Image.open(BytesIO(img_data))
+    rgb_image = image.convert("RGB")  # Ensure it's in RGB mode
+    return np.array(rgb_image)
 
-@facerec_bp.route('/register-face-page')
-def register_face_page():
-    return render_template('register_face.html')
+# ---------------------------
+# REGISTER FACE (Save encoding to MongoDB)
+# ---------------------------
+def register_face_from_base64(base64_image, user_id):
+    image = decode_base64_image(base64_image)
+    encodings = face_recognition.face_encodings(image)
 
-@facerec_bp.route('/verify-user', methods=['POST'])
-def verify_user():
-    data = request.json
-    phone = data.get('phone')
-    pin = data.get('pin')
+    if not encodings:
+        return False  # ❌ No face detected
 
-    db = get_db()
-    user = db.users.find_one({"phone": phone, "pin": pin})
-    return jsonify({"success": bool(user)})
+    face_encoding = encodings[0]
+    save_user_encoding(user_id, face_encoding)  # Save to MongoDB
+    return True
 
-@facerec_bp.route('/register-face', methods=['POST'])
-def register_face():
-    data = request.json
-    phone = data.get("phone")
-    image_data = data.get("image")
+# ---------------------------
+# VERIFY FACE (Compare with MongoDB stored encodings)
+# ---------------------------
+def verify_face_from_base64(base64_image, tolerance=0.45):
+    image = decode_base64_image(base64_image)
+    encodings = face_recognition.face_encodings(image)
 
-    # Decode base64 to image (optional - here just to validate)
-    img_bytes = base64.b64decode(image_data.split(',')[1])
-    np_arr = np.frombuffer(img_bytes, np.uint8)
-    img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    if not encodings:
+        return False  # ❌ No face detected
 
-    db = get_db()
-    db.face_data.insert_one({
-        "phone": phone,
-        "image": image_data
-    })
-    return jsonify({"message": "Face registered successfully"})
+    current_encoding = encodings[0]
 
-def verify_face_from_base64(phone, image_base64):
-    """
-    Stub example for face verification by comparing with registered data.
+    all_encodings = get_all_encodings()  # {user_id: [128 floats]}
+    for user_id, stored_encoding in all_encodings.items():
+        stored_encoding_np = np.array(stored_encoding)
+        matches = face_recognition.compare_faces([stored_encoding_np], current_encoding, tolerance=tolerance)
+        if matches[0]:
+            return True  # ✅ Face matched
 
-    Args:
-        phone (str): User phone number to find registered face.
-        image_base64 (str): Base64 encoded face image to verify.
-
-    Returns:
-        bool: True if face matches, False otherwise.
-    """
-    db = get_db()
-    user_face = db.face_data.find_one({"phone": phone})
-
-    if not user_face:
-        return False
-
-    # Decode input image
-    input_img_bytes = base64.b64decode(image_base64.split(',')[1])
-    input_np_arr = np.frombuffer(input_img_bytes, np.uint8)
-    input_img = cv2.imdecode(input_np_arr, cv2.IMREAD_COLOR)
-
-    # Decode registered image
-    reg_img_bytes = base64.b64decode(user_face["image"].split(',')[1])
-    reg_np_arr = np.frombuffer(reg_img_bytes, np.uint8)
-    reg_img = cv2.imdecode(reg_np_arr, cv2.IMREAD_COLOR)
-
-    # Dummy check: compare image shapes
-    if input_img.shape == reg_img.shape:
-        return True
-    return False
+    return False  # ❌ No match
