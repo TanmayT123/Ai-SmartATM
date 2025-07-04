@@ -7,11 +7,17 @@ from app.facerec import verify_face_from_base64, register_face_from_base64
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/', methods=['GET'])
+# Role selection landing page
+@auth_bp.route('/select-role')
+def select_role():
+    return render_template('role_select.html')
+
+# USER LOGIN
+@auth_bp.route('/login', methods=['GET'])
 def login_page():
     return render_template('login.html')
 
-@auth_bp.route('/', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     phone = request.form.get('phone')
     pin = request.form.get('pin')
@@ -21,12 +27,17 @@ def login():
 
     if user:
         session['user_id'] = str(user['_id'])
-        session['phone'] = phone  # Store phone number in session for face logic
+        session['phone'] = phone  # Used for face auth
         flash("Login successful!", "success")
         return redirect(url_for('auth.dashboard'))
     else:
         flash("Invalid phone number or PIN", "flash")
         return redirect(url_for('auth.login_page'))
+
+# Admin login placeholder
+@auth_bp.route('/admin-login', methods=['GET'])
+def admin_login_page():
+    return "<h2 style='color: #00ffcc; background:#1a1a1a; padding:2rem; text-align:center;'>Admin login page coming soon...</h2>"
 
 @auth_bp.route('/dashboard')
 def dashboard():
