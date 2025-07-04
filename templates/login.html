@@ -1,27 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Smart‑ATM | Login</title>
-    <style>
-        body{background:#1a1a1a;font-family:"Segoe UI",sans-serif;color:#00ffcc;
-             display:flex;flex-direction:column;align-items:center;padding-top:60px}
-        h2{font-size:2rem;margin-bottom:30px}
-        form{display:flex;flex-direction:column;gap:15px;width:260px}
-        input,button{padding:10px;border-radius:6px;border:none;font-size:1rem}
-        button{background:#00ffcc;color:#1a1a1a;cursor:pointer}
-        button:hover{background:#00bfa6}
-        .flash{margin-top:15px;color:#ff4d4d}
-        .success{color:#00d9b5}
-    </style>
+  <meta charset="UTF-8" />
+  <title>Smart‑ATM | Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0e0e0e;
+      font-family: 'Segoe UI', sans-serif;
+      color: #00ffcc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-card {
+      background: #1a1a1a;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .login-card h2 {
+      text-align: center;
+      margin-bottom: -5px;
+      font-size: 1.8rem;
+      color: #00ffcc;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 10px;
+      background: #111;
+      color: #00ffcc;
+      border: 1px solid #00ffcc;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #00bfa6;
+      box-shadow: 0 0 6px #00bfa6;
+    }
+
+    .form-group input::placeholder {
+      color: #00ffcc88;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00ffcc;
+      color: #1a1a1a;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #00bfa6;
+    }
+
+    .flash {
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .flash.flash {
+      background: #ff1a1a11;
+      color: #ff4d4d;
+    }
+
+    .flash.success {
+      background: #00bfa611;
+      color: #00ffcc;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
+  <div class="login-card">
     <h2>🔐 Smart‑ATM Login</h2>
 
     <form method="POST">
-        <input  type="text"     name="phone" placeholder="Phone number"    required />
-        <input  type="password" name="pin"   placeholder="4‑digit PIN"     required maxlength="4" minlength="4"/>
-        <button type="submit">Login</button>
+      <div class="form-group">
+        <input type="text" name="phone" placeholder="Phone number" required />
+      </div>
+      <div class="form-group">
+        <input type="password" name="pin" placeholder="4‑digit PIN" required maxlength="4" minlength="4" />
+      </div>
+      <button type="submit">Login</button>
     </form>
 
     {% with msgs = get_flashed_messages(with_categories=true) %}
@@ -31,5 +124,6 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+  </div>
 </body>
 </html>

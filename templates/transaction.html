@@ -1,23 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ type.capitalize() }} | Smart‑ATM</title>
-    <style>
-        body { background:#1a1a1a; color:#00ffcc; font-family:"Segoe UI",sans-serif; display:flex; flex-direction:column; align-items:center; padding-top:60px }
-        h2 { font-size:2rem; margin-bottom:20px }
-        form { display:flex; flex-direction:column; gap:15px; width:260px }
-        input,button { padding:10px; border-radius:6px; border:none; font-size:1rem }
-        button { background:#00ffcc; color:#1a1a1a; cursor:pointer }
-        button:hover { background:#00bfa6 }
-    </style>
+  <meta charset="UTF-8">
+  <title>{{ type.capitalize() }} | Smart‑ATM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #0e0e0e;
+      color: #00ffcc;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .txn-box {
+      background: #1a1a1a;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+      width: 100%;
+      max-width: 320px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      background: #00ffcc;
+      border: none;
+      border-radius: 8px;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #00bfa6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
+  <div class="txn-box">
     <h2>{{ "➕ Deposit" if type == "deposit" else "➖ Withdraw" }}</h2>
 
     <form method="POST">
-        <input type="number" name="amount" placeholder="Enter amount" required min="1" />
-        <button type="submit">{{ "Deposit" if type == "deposit" else "Withdraw" }}</button>
+      <input type="number" name="amount" placeholder="Enter amount" required min="1" />
+      <button type="submit">{{ "Deposit" if type == "deposit" else "Withdraw" }}</button>
     </form>
+  </div>
 </body>
 </html>
