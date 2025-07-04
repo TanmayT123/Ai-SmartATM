@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART BANK | New Account Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c1e3e 0%, #152c4e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 25px;
+        }
+
+        .register-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #0059b3, #00a8e8);
+            border-radius: 2px;
+        }
+
+        .bank-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0059b3, #00a8e8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            box-shadow: 0 5px 15px rgba(0, 89, 179, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #0059b3, #00a8e8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            color: #0c1e3e;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0c1e3e;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: #0059b3;
+            width: 20px;
+            text-align: center;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 1px solid #d1d9e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafd;
+            color: #0c1e3e;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00a8e8;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a6d8c;
+            font-size: 18px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5a6d8c;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0059b3 0%, #00a8e8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 89, 179, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 89, 179, 0.4);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d1d9e6, transparent);
+        }
+
+        .divider::before {
+            margin-right: 15px;
+        }
+
+        .divider::after {
+            margin-left: 15px;
+        }
+
+        .login-section {
+            text-align: center;
+        }
+
+        .login-section p {
+            color: #5a6d8c;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .login-link-btn {
+            padding: 14px 30px;
+            background: transparent;
+            color: #0059b3;
+            border: 2px solid #d1d9e6;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-link-btn:hover {
+            background: #f0f7ff;
+            border-color: #00a8e8;
+            color: #00a8e8;
+            transform: translateY(-2px);
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            background: #ff5252;
+            border-radius: 2px;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 35px 25px;
+            }
+            
+            .logo-text {
+                font-size: 26px;
+            }
+            
+            .register-header h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Decorative elements */
+        .decorative-circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 89, 179, 0.1) 0%, rgba(0, 168, 232, 0.1) 100%);
+            top: -100px;
+            right: -100px;
+            z-index: 0;
+        }
+
+        .decorative-circle-2 {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 89, 179, 0.08) 0%, rgba(0, 168, 232, 0.08) 100%);
+            bottom: -70px;
+            left: -70px;
+            z-index: 0;
+        }
+        
+        /* Form validation styling */
+        .form-group.error input {
+            border-color: #ff5252;
+        }
+        
+        .error-message {
+            color: #ff5252;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-group.error .error-message {
+            display: block;
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="decorative-circle"></div>
+        <div class="decorative-circle-2"></div>
+        
+        <div class="register-header">
+            <div class="bank-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="logo-text">SMART BANK</div>
+            </div>
+            <h1>Create New Account</h1>
+        </div>
+        
+        <form id="registrationForm" method="POST">
+            <div class="form-group">
+                <label for="firstname"><i class="fas fa-user"></i> First Name</label>
+                <div class="input-wrapper">
+                    <i class="input-icon fas fa-user-circle"></i>
+                    <input type="text" id="firstname" name="firstname" placeholder="Enter your first name" required />
+                </div>
+                <div class="error-message">Please enter your first name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastname"><i class="fas fa-user"></i> Last Name</label>
+                <div class="input-wrapper">
+                    <i class="input-icon fas fa-user-circle"></i>
+                    <input type="text" id="lastname" name="lastname" placeholder="Enter your last name" required />
+                </div>
+                <div class="error-message">Please enter your last name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone"><i class="fas fa-mobile-alt"></i> Phone Number</label>
+                <div class="input-wrapper">
+                    <i class="input-icon fas fa-phone"></i>
+                    <input type="tel" id="phone" name="phone" pattern="[6-9]{1}[0-9]{9}" maxlength="10"
+                           placeholder="Enter 10-digit mobile number" required />
+                </div>
+                <div class="error-message">Please enter a valid 10-digit phone number</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                <div class="input-wrapper">
+                    <i class="input-icon fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                </div>
+                <div class="error-message">Please enter a valid email address</div>
+            </div>
+
+            <div class="form-group">
+                <label for="pin"><i class="fas fa-key"></i> PIN (4 digits)</label>
+                <div class="input-wrapper">
+                    <i class="input-icon fas fa-lock"></i>
+                    <input type="password" id="pin" name="pin" pattern="\d{4}" maxlength="4"
+                           placeholder="Enter 4-digit PIN" required />
+                    <i class="password-toggle fas fa-eye" id="togglePassword"></i>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-meter" id="strengthMeter"></div>
+                </div>
+                <div class="error-message">PIN must be 4 digits</div>
+            </div>
+
+            <button type="submit" class="register-btn">Create Account</button>
+        </form>
+
+        <div class="divider">Already have an account?</div>
+        
+        <div class="login-section">
+            <a href="/login" class="login-link-btn">Sign In Now</a>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#pin');
+        
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Add subtle animation to form elements
+        document.querySelectorAll('.form-group').forEach((group, index) => {
+            group.style.opacity = "0";
+            group.style.transform = "translateY(20px)";
+            group.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1 + 0.3}s`;
+        });
+        
+        // Form validation
+        const form = document.getElementById('registrationForm');
+        const inputs = form.querySelectorAll('input');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                validateField(this);
+                
+                // Special handling for PIN field
+                if (this.id === 'pin') {
+                    updatePasswordStrength(this.value);
+                }
+            });
+        });
+        
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    isValid = false;
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+        
+        function validateField(field) {
+            const group = field.closest('.form-group');
+            const error = group.querySelector('.error-message');
+            
+            if (field.checkValidity()) {
+                group.classList.remove('error');
+                return true;
+            } else {
+                group.classList.add('error');
+                return false;
+            }
+        }
+        
+        // Password strength indicator
+        function updatePasswordStrength(pin) {
+            const strengthMeter = document.getElementById('strengthMeter');
+            let strength = 0;
+            
+            // Simple PIN strength calculation
+            if (pin.length > 0) strength = 25;
+            if (pin.length > 1) strength = 50;
+            if (pin.length > 2) strength = 75;
+            if (pin.length > 3) strength = 100;
+            
+            strengthMeter.style.width = strength + '%';
+            
+            // Update color based on strength
+            if (strength < 50) {
+                strengthMeter.style.background = '#ff5252';
+            } else if (strength < 75) {
+                strengthMeter.style.background = '#ffb142';
+            } else {
+                strengthMeter.style.background = '#2ed573';
+            }
+        }
+    </script>
+</body>
+</html>

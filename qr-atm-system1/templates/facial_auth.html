@@ -68,19 +68,29 @@
         }
 
         function verifyFace() {
-            const image = captureImage();
-            statusText.textContent = '🔍 Verifying...';
-            fetch('/match-face', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image })
-            })
-            .then(res => res.json())
-            .then(data => {
-                statusText.textContent = data.success ? '✅ ' + data.message : '❌ ' + data.message;
-                if (data.success) setTimeout(() => window.location.href = '/dashboard', 1500);
-            });
+    const image = captureImage();                      // your existing helper
+    statusText.textContent = '🔍 Verifying…';
+
+    fetch('/match-face', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image })
+    })
+    .then(res  => res.json())
+    .then(data => {
+        statusText.textContent = (data.success ? '✅ ' : '❌ ') + data.message;
+
+        if (data.success && data.next) {
+            // server tells us the next page (e.g. /amount)
+            setTimeout(() => window.location.href = data.next, 1200);
         }
+    })
+    .catch(err => {
+        console.error(err);
+        statusText.textContent = '❌ Network error';
+    });
+}
+        
 
         function registerFace() {
             const image = captureImage();
@@ -98,3 +108,5 @@
     </script>
 </body>
 </html>
+
+

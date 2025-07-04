@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart ATM</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            font-family: "Segoe UI", sans-serif;
+            color: #00ffcc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .balance-display {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        .atm-panel {
+            background-color: #000;
+            padding: 30px;
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background-color: #00ffcc;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00bfa6;
+        }
+
+        .form-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input {
+            margin-top: 10px;
+            padding: 8px;
+            width: 90%;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .form-section button {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏛️ Welcome to Smart Bank</h1>
+
+    <!-- 👤 Display user's full name -->
+<p style="margin-bottom: 20px; font-size: 1.1rem;">
+    👋 Hello, {{ firstname }} {{ lastname }}!
+</p>
+   
+    <div class="atm-panel">
+
+        <!-- ✅ Register face opens in new tab -->
+        <button onclick="window.open('/register-face', '_blank')">👤 Register Face Data</button>
+
+        
+
+    
+        <!-- ✅ Check balance toggles balance section -->
+        <button onclick="showSection('balance')">📊 Check Balance</button>
+
+        <!-- ❌ These duplicate forms for deposit/withdraw were unused so removed -->
+
+        <!-- ✅ Balance check (already functional) -->
+        <div id="balance" class="form-section">
+            <div class="balance-display">
+                🧾 Your Current Balance: ₹{{ balance }}
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showSection(id) {
+            const sections = document.querySelectorAll(".form-section");
+            sections.forEach(section => section.style.display = "none");
+            document.getElementById(id).style.display = "block";
+        }
+    </script>
+</body>
+</html>

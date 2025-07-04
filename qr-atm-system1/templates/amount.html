@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ tx_type or 'Transaction' }} Amount</title>
+  <style>
+    body {
+      background: #ffffff;  /* Full white */
+      font-family: "Segoe UI", sans-serif;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 260px;
+    }
+    input, button {
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .flash {
+      margin-top: 15px;
+    }
+    .error { color: #d9534f; }
+    .success { color: #28a745; }
+  </style>
+</head>
+<body>
+  <h2>{{ tx_type or 'Transaction' }} – Enter Amount (₹)</h2>
+
+  <form method="POST">
+    <input type="number" name="amount" step="0.01" min="0.01" required placeholder="e.g. 1500.00" />
+    <button type="submit">{{ tx_type or 'Submit' }}</button>
+  </form>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+</body>
+</html>
