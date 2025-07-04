@@ -21,6 +21,7 @@ def login():
 
     if user:
         session['user_id'] = str(user['_id'])
+        session['phone'] = phone  # Store phone number in session for face logic
         flash("Login successful!", "success")
         return redirect(url_for('auth.dashboard'))
     else:
@@ -63,11 +64,11 @@ def register_face():
     if not image_data:
         return jsonify({"success": False, "message": "No image received"})
 
-    user_id = session.get('user_id')
-    if not user_id:
+    phone = session.get('phone')
+    if not phone:
         return jsonify({"success": False, "message": "User not logged in"})
 
-    success = register_face_from_base64(image_data, user_id)
+    success = register_face_from_base64(image_data, phone)
     if success:
         return jsonify({"success": True, "message": "Face registered successfully"})
     else:
@@ -81,20 +82,21 @@ def match_face():
     if not image_data:
         return jsonify({"success": False, "message": "No image received"})
 
-    matched_user_id = verify_face_from_base64(image_data)
+    matched_phone = verify_face_from_base64(image_data)
 
-    if matched_user_id:
-        session['user_id'] = matched_user_id
+    if matched_phone:
+        db = get_db()
+        user = db.users.find_one({"phone": matched_phone})
+        if user:
+            session['user_id'] = str(user['_id'])
+            session['phone'] = matched_phone
 
-        # 🔁 Redirect based on pending transaction
-        redirect_url = url_for('auth.do_transaction', type=session.get('pending_transaction', 'deposit'))
+            redirect_url = url_for('auth.do_transaction', type=session.get('pending_transaction', 'deposit'))
+            session.pop('pending_transaction', None)
 
-        # ✅ Clear the pending transaction after match
-        session.pop('pending_transaction', None)
+            return jsonify({"success": True, "message": "Face matched!", "redirect_url": redirect_url})
 
-        return jsonify({"success": True, "message": "Face matched!", "redirect_url": redirect_url})
-    else:
-        return jsonify({"success": False, "message": "Face not recognized"})
+    return jsonify({"success": False, "message": "Face not recognized"})
 
 @auth_bp.route('/do-transaction/<type>', methods=['GET', 'POST'])
 def do_transaction(type):
