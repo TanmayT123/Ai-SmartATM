@@ -7,12 +7,12 @@ from app.facerec import verify_face_from_base64, register_face_from_base64
 
 auth_bp = Blueprint('auth', __name__)
 
-# Role selection landing page
+# 🔹 Role selection landing page
 @auth_bp.route('/select-role')
 def select_role():
     return render_template('role_select.html')
 
-# USER LOGIN
+# 🔹 USER LOGIN
 @auth_bp.route('/login', methods=['GET'])
 def login_page():
     return render_template('login.html')
@@ -34,11 +34,12 @@ def login():
         flash("Invalid phone number or PIN", "flash")
         return redirect(url_for('auth.login_page'))
 
-# Admin login placeholder
+# 🔹 ADMIN LOGIN ➜ Redirects to register.html
 @auth_bp.route('/admin-login', methods=['GET'])
 def admin_login_page():
-    return "<h2 style='color: #00ffcc; background:#1a1a1a; padding:2rem; text-align:center;'>Admin login page coming soon...</h2>"
+    return render_template('register.html')
 
+# 🔹 USER DASHBOARD
 @auth_bp.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -50,6 +51,7 @@ def dashboard():
     balance = user.get('balance', 0)
     return render_template('dashboard.html', balance=balance)
 
+# 🔹 SELECT TRANSACTION
 @auth_bp.route('/select-transaction/<type>')
 def select_transaction(type):
     if type not in ['deposit', 'withdraw']:
@@ -59,6 +61,7 @@ def select_transaction(type):
     session['pending_transaction'] = type
     return redirect(url_for('auth.facial_auth'))
 
+# 🔹 FACIAL AUTH PAGE
 @auth_bp.route('/facial-auth')
 def facial_auth():
     if 'pending_transaction' not in session:
@@ -67,6 +70,7 @@ def facial_auth():
 
     return render_template('facial_auth.html')
 
+# 🔹 REGISTER FACE (Capture + Save)
 @auth_bp.route('/register-face', methods=['POST'])
 def register_face():
     data = request.get_json()
@@ -85,6 +89,7 @@ def register_face():
     else:
         return jsonify({"success": False, "message": "No face detected"})
 
+# 🔹 MATCH FACE (for transaction auth)
 @auth_bp.route('/match-face', methods=['POST'])
 def match_face():
     data = request.get_json()
@@ -109,6 +114,7 @@ def match_face():
 
     return jsonify({"success": False, "message": "Face not recognized"})
 
+# 🔹 DO TRANSACTION
 @auth_bp.route('/do-transaction/<type>', methods=['GET', 'POST'])
 def do_transaction(type):
     if 'user_id' not in session:
@@ -142,6 +148,7 @@ def do_transaction(type):
 
     return render_template('transaction.html', type=type)
 
+# 🔹 LOGOUT
 @auth_bp.route('/logout')
 def logout():
     session.clear()
