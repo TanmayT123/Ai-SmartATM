@@ -70,6 +70,7 @@
         function verifyFace() {
             const image = captureImage();
             statusText.textContent = 'Verifying...';
+
             fetch('/match-face', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -78,7 +79,11 @@
             .then(res => res.json())
             .then(data => {
                 statusText.textContent = data.success ? '✅ ' + data.message : '❌ ' + data.message;
-                if (data.success) setTimeout(() => window.location.href = '/dashboard', 1500);
+                if (data.success && data.redirect_url) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1000);
+                }
             });
         }
 

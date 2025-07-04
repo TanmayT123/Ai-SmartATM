@@ -49,6 +49,10 @@ def select_transaction(type):
 
 @auth_bp.route('/facial-auth')
 def facial_auth():
+    if 'pending_transaction' not in session:
+        flash("Transaction type not selected.", "flash")
+        return redirect(url_for('auth.dashboard'))
+
     return render_template('facial_auth.html')
 
 @auth_bp.route('/register-face', methods=['POST'])
@@ -81,7 +85,13 @@ def match_face():
 
     if matched_user_id:
         session['user_id'] = matched_user_id
+
+        # 🔁 Redirect based on pending transaction
         redirect_url = url_for('auth.do_transaction', type=session.get('pending_transaction', 'deposit'))
+
+        # ✅ Clear the pending transaction after match
+        session.pop('pending_transaction', None)
+
         return jsonify({"success": True, "message": "Face matched!", "redirect_url": redirect_url})
     else:
         return jsonify({"success": False, "message": "Face not recognized"})
@@ -115,7 +125,6 @@ def do_transaction(type):
             db.users.update_one({"_id": user['_id']}, {"$set": {"balance": new_balance}})
             flash(f"Withdrew ₹{amount}", "success")
 
-        session.pop('pending_transaction', None)
         return redirect(url_for('auth.dashboard'))
 
     return render_template('transaction.html', type=type)
