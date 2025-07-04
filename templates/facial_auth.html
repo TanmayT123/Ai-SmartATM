@@ -13,12 +13,14 @@
             align-items: center;
             padding: 30px;
         }
+
         h2 { font-size: 2rem; margin-bottom: 20px; }
         video, canvas {
             border: 2px solid #00ffcc;
             border-radius: 10px;
             margin-bottom: 20px;
         }
+
         button {
             padding: 12px 24px;
             font-size: 1rem;
@@ -28,11 +30,12 @@
             color: #000;
             font-weight: bold;
             cursor: pointer;
-            margin: 5px;
         }
+
         button:hover {
             background-color: #00bfa6;
         }
+
         #status {
             margin-top: 20px;
             color: #ffffff;
@@ -41,14 +44,11 @@
 </head>
 <body>
     <h2>Facial Authentication</h2>
-
     <video id="video" width="320" height="240" autoplay></video>
     <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-
-    <div>
-        <button onclick="verifyFace()">🔍 Verify Face</button>
-        <button onclick="registerFace()">📝 Register Face</button>
-    </div>
+    
+    <button onclick="verifyFace()">🔍 Verify Face</button>
+    <button onclick="registerFace()">📝 Register Face</button>
 
     <p id="status">Status: Waiting for action...</p>
 
@@ -59,7 +59,7 @@
 
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
-            .catch(err => { statusText.textContent = '❌ Error accessing webcam: ' + err; });
+            .catch(err => { statusText.textContent = 'Error accessing webcam: ' + err; });
 
         function captureImage() {
             const context = canvas.getContext('2d');
@@ -68,33 +68,23 @@
         }
 
         function verifyFace() {
-    const image = captureImage();                      // your existing helper
-    statusText.textContent = '🔍 Verifying…';
-
-    fetch('/match-face', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image })
-    })
-    .then(res  => res.json())
-    .then(data => {
-        statusText.textContent = (data.success ? '✅ ' : '❌ ') + data.message;
-
-        if (data.success && data.next) {
-            // server tells us the next page (e.g. /amount)
-            setTimeout(() => window.location.href = data.next, 1200);
+            const image = captureImage();
+            statusText.textContent = 'Verifying...';
+            fetch('/match-face', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image })
+            })
+            .then(res => res.json())
+            .then(data => {
+                statusText.textContent = data.success ? '✅ ' + data.message : '❌ ' + data.message;
+                if (data.success) setTimeout(() => window.location.href = '/dashboard', 1500);
+            });
         }
-    })
-    .catch(err => {
-        console.error(err);
-        statusText.textContent = '❌ Network error';
-    });
-}
-        
 
         function registerFace() {
             const image = captureImage();
-            statusText.textContent = '📝 Registering...';
+            statusText.textContent = 'Registering...';
             fetch('/register-face', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -108,5 +98,3 @@
     </script>
 </body>
 </html>
-
-

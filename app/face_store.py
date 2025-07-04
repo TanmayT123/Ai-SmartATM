@@ -1,10 +1,11 @@
+# app/face_store.py
+
 from app.db import get_db
 
 def save_user_encoding(user_id, face_encoding):
     db = get_db()
     collection = db['face_encodings']
 
-    # Check if already registered
     existing = collection.find_one({'user_id': user_id})
     if existing:
         collection.update_one({'user_id': user_id}, {'$set': {'encoding': face_encoding.tolist()}})

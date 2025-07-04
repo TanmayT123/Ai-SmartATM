@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Smart‑ATM | Login</title>
+    <style>
+        body{background:#1a1a1a;font-family:"Segoe UI",sans-serif;color:#00ffcc;
+             display:flex;flex-direction:column;align-items:center;padding-top:60px}
+        h2{font-size:2rem;margin-bottom:30px}
+        form{display:flex;flex-direction:column;gap:15px;width:260px}
+        input,button{padding:10px;border-radius:6px;border:none;font-size:1rem}
+        button{background:#00ffcc;color:#1a1a1a;cursor:pointer}
+        button:hover{background:#00bfa6}
+        .flash{margin-top:15px;color:#ff4d4d}
+        .success{color:#00d9b5}
+    </style>
+</head>
+<body>
+    <h2>🔐 Smart‑ATM Login</h2>
+
+    <form method="POST">
+        <input  type="text"     name="phone" placeholder="Phone number"    required />
+        <input  type="password" name="pin"   placeholder="4‑digit PIN"     required maxlength="4" minlength="4"/>
+        <button type="submit">Login</button>
+    </form>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        {% for cat,msg in msgs %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

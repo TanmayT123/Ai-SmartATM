@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Transaction</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            font-family: "Segoe UI", sans-serif;
+            color: #00ffcc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            background-color: #00ffcc;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00bfa6;
+        }
+    </style>
+</head>
+<body>
+    <h2>Select Transaction</h2>
+    <!-- Go to Face Match Page -->
+    <form action="/facial-auth" method="get">
+        <button type="submit">🧠 Facial Recognition</button>
+    </form>
+
+    <!-- Back to Dashboard -->
+    <form action="/dashboard" method="get">
+        <button type="submit">🔙 Back to Dashboard</button>
+    </form>
+</body>
+</html>
