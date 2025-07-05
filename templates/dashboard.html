@@ -2,142 +2,382 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart‑ATM | Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
     body {
-      background: #0e0e0e;
-      font-family: "Segoe UI", sans-serif;
-      color: #00ffcc;
+      background: linear-gradient(135deg, #0d1b36 0%, #1a2a4f 100%);
+      color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 50px 20px;
       min-height: 100vh;
-      margin: 0;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Security pattern overlay */
+    .security-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0.5px, transparent 1px),
+        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.03) 0.5px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .dashboard-card {
-      background: #1a1a1a;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 420px;
       padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 25px;
-      animation: fadeIn 0.4s ease-in-out;
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 0.6s ease-out;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin: 0;
-      text-align: center;
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #00a8e8, #0062a0);
+      border-radius: 20px 20px 0 0;
+      z-index: 20;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo-icon {
+      background: #00a8e8;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 168, 232, 0.3);
+    }
+
+    .logo-icon i {
+      font-size: 22px;
+      color: white;
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .welcome-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 5px;
+    }
+
+    .app-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: white;
     }
 
     .panel {
-      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .card-button {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      align-items: center;
+      gap: 12px;
     }
 
-    a {
-      text-decoration: none;
+    .card-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
+    .card-button i {
+      font-size: 28px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 168, 232, 0.15);
+      color: #00a8e8;
+    }
+
+    .button-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: white;
+    }
+
+    .balance-section {
+      margin-bottom: 25px;
+    }
+
+    .balance-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-label i {
+      color: #00a8e8;
+    }
+
+    .balance-container {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .balance-amount {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .currency {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .balance-action {
+      background: rgba(0, 168, 232, 0.15);
+      color: #00a8e8;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      background: #00ffcc;
-      color: #1a1a1a;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
     }
 
-    button:hover {
-      background-color: #00bfa6;
+    .balance-action:hover {
+      background: rgba(0, 168, 232, 0.25);
     }
 
-    .balance {
-      margin-top: 10px;
-      font-size: 1.1rem;
-      padding: 12px;
-      background-color: #111;
-      border: 1px solid #00ffcc55;
-      border-radius: 8px;
+    .logout-container {
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-button {
       width: 100%;
-      text-align: center;
-      display: none;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
 
-    .flash, .success {
-      margin-top: 15px;
-      font-size: 0.95rem;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
-      width: 100%;
+    .logout-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .flash-messages {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .flash {
-      background: #ff1a1a11;
-      color: #ff4d4d;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      animation: fadeIn 0.4s ease-in-out;
     }
 
-    .success {
-      background: #00bfa611;
+    .flash.flash {
+      background: rgba(255, 77, 77, 0.15);
+      color: #ff4d4d;
+      border: 1px solid rgba(255, 77, 77, 0.2);
+    }
+
+    .flash.success {
+      background: rgba(0, 255, 204, 0.15);
       color: #00ffcc;
+      border: 1px solid rgba(0, 255, 204, 0.2);
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      .dashboard-card {
+        padding: 30px 20px;
+      }
+      
+      .panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .balance-amount {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="security-overlay"></div>
+  
   <div class="dashboard-card">
-    <h1>💳 Welcome to Smart ATM</h1>
-
+    <div class="header">
+      <div class="logo-icon">
+        <i class="fas fa-university"></i>
+      </div>
+      <div class="header-text">
+        <div class="welcome-text">Welcome to</div>
+        <div class="app-name">Smart‑ATM</div>
+      </div>
+    </div>
+    
     <div class="panel">
       <!-- Deposit -->
-      <a href="{{ url_for('auth.select_transaction', type='deposit') }}">
-        <button>➕ Deposit</button>
+      <a href="{{ url_for('auth.select_transaction', type='deposit') }}" class="card-button">
+        <i class="fas fa-plus-circle"></i>
+        <div class="button-text">Deposit</div>
       </a>
-
+      
       <!-- Withdraw -->
-      <a href="{{ url_for('auth.select_transaction', type='withdraw') }}">
-        <button>➖ Withdraw</button>
+      <a href="{{ url_for('auth.select_transaction', type='withdraw') }}" class="card-button">
+        <i class="fas fa-minus-circle"></i>
+        <div class="button-text">Withdraw</div>
       </a>
-
+      
       <!-- Balance -->
-      <button onclick="document.querySelector('.balance').style.display='block'">
-        📊 Check Balance
-      </button>
-
+      <div class="card-button" id="balanceButton">
+        <i class="fas fa-chart-bar"></i>
+        <div class="button-text">Balance</div>
+      </div>
+      
       <!-- Logout -->
-      <a href="{{ url_for('auth.logout') }}">
-        <button>🚪 Logout</button>
+      <a href="{{ url_for('auth.logout') }}" class="card-button">
+        <i class="fas fa-sign-out-alt"></i>
+        <div class="button-text">Logout</div>
       </a>
     </div>
-
-    <div class="balance">
-      🧾 Current Balance: ₹{{ balance }}
+    
+    <div class="balance-section" id="balanceSection" style="display: none;">
+      <div class="balance-label">
+        <i class="fas fa-wallet"></i>
+        <span>Current Balance</span>
+      </div>
+      <div class="balance-container">
+        <div class="balance-amount">₹{{ balance }}</div>
+        <div class="currency">INR</div>
+      </div>
     </div>
-
-    {% with msgs = get_flashed_messages(with_categories=true) %}
-      {% if msgs %}
-        {% for cat, msg in msgs %}
-          <div class="{{ cat }}">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    
+    <div class="logout-container">
+      <a href="{{ url_for('auth.logout') }}">
+        <button class="logout-button">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+      </a>
+    </div>
+    
+    <div class="flash-messages">
+      {% with msgs = get_flashed_messages(with_categories=true) %}
+        {% if msgs %}
+          {% for cat, msg in msgs %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
   </div>
+  
+  <script>
+    // Balance toggle functionality
+    const balanceButton = document.getElementById('balanceButton');
+    const balanceSection = document.getElementById('balanceSection');
+    
+    balanceButton.addEventListener('click', function() {
+      balanceSection.style.display = balanceSection.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Button press animations
+    document.querySelectorAll('.card-button').forEach(button => {
+      button.addEventListener('mousedown', function() {
+        this.style.transform = 'scale(0.98)';
+      });
+      
+      button.addEventListener('mouseup', function() {
+        this.style.transform = '';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    });
+  </script>
 </body>
 </html>

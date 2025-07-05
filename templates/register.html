@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATM Registration</title>
+    <title>ATM Registration - SecureBank</title>
     <style>
         * {
             margin: 0;
@@ -13,59 +13,131 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 50%, #5e35b1 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="25" cy="25" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="0.5" fill="rgba(255,255,255,0.05)"/></svg>') repeat;
+            z-index: -1;
+            animation: pattern-move 20s linear infinite;
+        }
+
+        @keyframes pattern-move {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(100px) translateY(100px); }
         }
 
         .register-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            box-shadow: 
+                0 32px 64px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.3);
+            padding: 48px;
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a237e, #3949ab, #5e35b1);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .logo-section {
+            margin-bottom: 32px;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            margin: 0 auto 20px;
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            border-radius: 20px;
+            margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 
+                0 16px 32px rgba(26, 35, 126, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        .bank-name {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
         h2 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 32px;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1a237e, #5e35b1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-section {
+            text-align: left;
         }
 
         .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+            margin-bottom: 24px;
+            position: relative;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
+            color: #374151;
+            font-weight: 600;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         input[type="text"],
@@ -73,46 +145,106 @@
         input[type="email"],
         input[type="tel"] {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
         }
 
         input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3949ab;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 
+                0 0 0 3px rgba(57, 73, 171, 0.1),
+                0 4px 12px rgba(57, 73, 171, 0.15);
+            transform: translateY(-1px);
+        }
+
+        input:valid {
+            border-color: #10b981;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            transition: color 0.3s ease;
+        }
+
+        input:focus + .input-icon {
+            color: #3949ab;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
         }
 
         .register-btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 16px;
+            background: linear-gradient(135deg, #1a237e, #3949ab);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .register-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 16px 32px rgba(26, 35, 126, 0.3);
+        }
+
+        .register-btn:hover::before {
+            left: 100%;
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
         }
 
         .divider {
-            margin: 30px 0;
+            margin: 32px 0;
             display: flex;
             align-items: center;
-            color: #999;
+            color: #9ca3af;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .divider::before,
@@ -120,60 +252,87 @@
             content: "";
             flex: 1;
             height: 1px;
-            background: #e1e5e9;
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
         }
 
         .divider::before {
-            margin-right: 15px;
+            margin-right: 16px;
         }
 
         .divider::after {
-            margin-left: 15px;
+            margin-left: 16px;
         }
 
         .login-section {
-            margin-top: 20px;
+            margin-top: 24px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
         }
 
         .login-section p {
-            color: #666;
-            margin-bottom: 15px;
+            color: #64748b;
+            margin-bottom: 16px;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .login-link-btn {
-            padding: 12px 30px;
+            padding: 12px 32px;
             background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 12px;
+            color: #3949ab;
+            border: 2px solid #3949ab;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .login-link-btn:hover {
-            background: #667eea;
+            background: #3949ab;
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 16px rgba(57, 73, 171, 0.3);
         }
 
-        @media (max-width: 480px) {
-            .register-container {
-                padding: 30px 20px;
-                margin: 10px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
+        .security-info {
+            margin-top: 24px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(26, 35, 126, 0.05), rgba(94, 53, 177, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(26, 35, 126, 0.1);
+            text-align: center;
         }
 
-        .floating-shapes {
+        .security-info p {
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .floating-elements {
             position: fixed;
             top: 0;
             left: 0;
@@ -181,96 +340,197 @@
             height: 100%;
             overflow: hidden;
             z-index: -1;
+            pointer-events: none;
         }
 
-        .shape {
+        .floating-shape {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
+            animation: float-complex 8s ease-in-out infinite;
         }
 
-        .shape:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 20%;
-            left: 10%;
+        .floating-shape:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 15%;
+            left: 5%;
             animation-delay: 0s;
         }
 
-        .shape:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 60%;
-            right: 10%;
+        .floating-shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 70%;
+            right: 15%;
             animation-delay: 2s;
         }
 
-        .shape:nth-child(3) {
+        .floating-shape:nth-child(3) {
             width: 60px;
             height: 60px;
-            top: 80%;
-            left: 20%;
+            top: 85%;
+            left: 15%;
             animation-delay: 4s;
         }
 
-        @keyframes float {
+        .floating-shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 40%;
+            right: 5%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float-complex {
             0%, 100% {
-                transform: translateY(0px) rotate(0deg);
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+                opacity: 0.5;
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px) rotate(90deg);
+                opacity: 0.8;
             }
             50% {
-                transform: translateY(-20px) rotate(180deg);
+                transform: translateY(-10px) translateX(-5px) rotate(180deg);
+                opacity: 0.3;
+            }
+            75% {
+                transform: translateY(-15px) translateX(15px) rotate(270deg);
+                opacity: 0.6;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .register-container {
+                padding: 32px 24px;
+                margin: 16px;
+                max-width: 100%;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .logo {
+                width: 72px;
+                height: 72px;
+                font-size: 28px;
+            }
+
+            .security-badges {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 24px 16px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+    <div class="background-pattern"></div>
+    
+    <div class="floating-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
     </div>
 
     <div class="register-container">
-        <div class="logo">ATM</div>
-        <h2>Create Account</h2>
+        <div class="logo-section">
+            <div class="logo">ATM</div>
+            <div class="bank-name">SECUREBANK</div>
+            <h2>Create Account</h2>
+        </div>
 
-        <form method="POST">
-            <div class="form-group">
-                <label for="firstname">First Name</label>
-                <input type="text" id="firstname" name="firstname" placeholder="Enter your first name" required />
-            </div>
+        <form method="POST" action="{{ url_for('auth.register_user') }}" class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="firstname" name="firstname" placeholder="Enter first name" required />
+                        <div class="input-icon">👤</div>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="lastname">Last Name</label>
-                <input type="text" id="lastname" name="lastname" placeholder="Enter your last name" required />
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="lastname" name="lastname" placeholder="Enter last name" required />
+                        <div class="input-icon">👤</div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" pattern="[6-9]{1}[0-9]{9}" maxlength="10"
-                       placeholder="Enter 10-digit mobile number" required />
+                <div class="input-wrapper">
+                    <input type="tel" id="phone" name="phone" pattern="[6-9]{1}[0-9]{9}" maxlength="10"
+                           placeholder="Enter 10-digit mobile number" required />
+                    <div class="input-icon">📱</div>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                <div class="input-wrapper">
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required />
+                    <div class="input-icon">✉️</div>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="pin">PIN (4 digits)</label>
-                <input type="password" id="pin" name="pin" pattern="\d{4}" maxlength="4"
-                       placeholder="Enter 4-digit PIN" required />
+                <label for="pin">Security PIN</label>
+                <div class="input-wrapper">
+                    <input type="password" id="pin" name="pin" pattern="\d{4}" maxlength="4"
+                           placeholder="Enter 4-digit PIN" required />
+                    <div class="input-icon">🔒</div>
+                </div>
             </div>
 
             <button type="submit" class="register-btn">Create Account</button>
         </form>
 
-        <div class="divider">or</div>
+      
 
-        <div class="login-section">
-            <p>Already have an account?</p>
-            <a href="/login" class="login-link-btn">Sign In</a>
+        
+
+        <div class="security-info">
+            <p>Your information is protected with bank-level security</p>
+            <div class="security-badges">
+                <div class="security-badge">
+                    <span>🔒</span>
+                    <span>256-bit SSL</span>
+                </div>
+                <div class="security-badge">
+                    <span>🛡️</span>
+                    <span>FDIC Insured</span>
+                </div>
+                <div class="security-badge">
+                    <span>✅</span>
+                    <span>Verified Secure</span>
+                </div>
+            </div>
         </div>
     </div>
 </body>

@@ -3,73 +3,224 @@
 <head>
     <title>Register Face</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #111;
-            color: #00ffcc;
-            font-family: 'Segoe UI', sans-serif;
-            text-align: center;
-            padding: 30px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
         }
-        form, video, canvas, button {
-            margin: 20px auto;
-            display: block;
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(0,255,204,.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(138,43,226,.1) 0%, transparent 50%);
+            pointer-events: none;
         }
-        input, button {
-            width: 300px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #00ffcc;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-        }
-        #video, #canvas {
-            border-radius: 10px;
-            max-width: 300px;
+
+        .container {
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,.1);
+            padding: 40px;
             width: 100%;
-            height: auto;
+            max-width: 480px;
+            box-shadow: 0 20px 40px rgba(0,0,0,.3);
+            position: relative;
+            overflow: hidden;
         }
-        #message {
-            margin-top: 15px;
-            min-height: 20px;
-            font-weight: bold;
-        }
-        #capturedPreview {
-            margin-top: 10px;
-            max-width: 300px;
-            border: 2px solid #00ffcc;
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            background: rgba(0,255,204,0.1);
+            padding: 8px 14px;
             border-radius: 10px;
-            display: none;
+            border: 1px solid rgba(0,255,204,0.2);
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: rgba(0,255,204,0.2);
+            transform: translateX(-2px);
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #00ffcc;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            font-size: 16px;
+            color: #fff;
+            outline: none;
+            transition: all .3s ease;
+        }
+        input:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 0 3px rgba(0,255,204,.15);
+            background: rgba(255,255,255,.12);
+        }
+        input::placeholder {
+            color: rgba(255,255,255,.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg,#00ffcc,#00d4aa);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            transition: all .3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content:'';
+            position:absolute; top:0; left:-100%;
+            width:100%; height:100%;
+            background: linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+            transition:left .5s;
+        }
+        .btn:hover::before { left:100%; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,255,204,.3); }
+        .btn:disabled { background:rgba(255,255,255,.1); color:rgba(255,255,255,.5); cursor:not-allowed; box-shadow:none; }
+        .btn:disabled::before { display:none; }
+
+        .media-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 20px 0;
+        }
+        .video-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        #video,#canvas,#capturedPreview {
+            width:100%;
+            max-width:320px;
+            border-radius:16px;
+            box-shadow:0 10px 30px rgba(0,0,0,.3);
+            border:2px solid rgba(0,255,204,.3);
+        }
+        #capturedPreview { display:none; border-color:#00ffcc; box-shadow:0 10px 30px rgba(0,255,204,.2); }
+
+        .message {
+            margin-top:20px;
+            padding:12px;
+            border-radius:8px;
+            text-align:center;
+            font-weight:500;
+            min-height:20px;
+            transition: all .3s ease;
+        }
+        .message.success { background:rgba(0,255,204,.1); border:1px solid rgba(0,255,204,.3); color:#00ffcc; }
+        .message.error   { background:rgba(255,68,68,.1); border:1px solid rgba(255,68,68,.3); color:#ff4444; }
+
+        .capture-btn { background: linear-gradient(135deg,#8a2be2,#6a1b9a); }
+        .capture-btn:hover { box-shadow:0 10px 30px rgba(138,43,226,.3); }
+
+        .loading {
+            position: relative;
+        }
+        .loading::after {
+            content:'';
+            position:absolute;
+            right:16px; top:50%;
+            transform:translateY(-50%);
+            width:20px; height:20px;
+            border:2px solid transparent;
+            border-top:2px solid currentColor;
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        .fade-in { animation:fadeIn .5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity:0; transform: translateY(20px); }
+            to   { opacity:1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <h1>🧠 Register Your Face</h1>
+    <div class="container">
 
-    <div id="verify-section">
-        <form id="authForm">
-            <input type="text" id="phone" placeholder="Enter Phone" required autocomplete="off" />
-            <input type="password" id="pin" placeholder="Enter PIN" required autocomplete="off" />
-            <button type="submit" id="verifyBtn">Verify & Start Camera</button>
-        </form>
+        <!-- 🔙 Back button -->
+        <button class="back-btn" onclick="history.back()">🔙 Back</button>
+
+        <h1><span class="icon">🧠</span>Face Registration</h1>
+
+        <div id="verify-section">
+            <form id="authForm">
+                <div class="form-group">
+                    <input type="text" id="phone" placeholder="📱 Enter Phone Number" required autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <input type="password" id="pin" placeholder="🔐 Enter PIN" required autocomplete="off" />
+                </div>
+                <button type="submit" id="verifyBtn" class="btn">
+                    <span class="icon">🔐</span>Verify & Start Camera
+                </button>
+            </form>
+        </div>
+
+        <div class="media-container">
+            <div class="video-wrapper">
+                <video id="video" autoplay style="display:none;"></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <button id="captureBtn" class="btn capture-btn" style="display:none;">
+                    <span class="icon">📸</span>Capture & Register
+                </button>
+                <img id="capturedPreview" alt="Captured face preview" />
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
     </div>
-
-    <video id="video" autoplay style="display:none;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button id="captureBtn" style="display:none;">📸 Capture & Register</button>
-
-    <!-- Optional captured image preview -->
-    <img id="capturedPreview" alt="Captured face preview" />
-
-    <div id="message"></div>
 
     <script>
         const authForm = document.getElementById('authForm');
@@ -86,21 +237,22 @@
 
         function showMessage(msg, isError = false) {
             messageDiv.textContent = msg;
-            messageDiv.style.color = isError ? '#ff4444' : '#00ffcc';
+            messageDiv.className = `message ${isError ? 'error' : 'success'}`;
+            if (msg) messageDiv.classList.add('fade-in');
         }
 
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             showMessage('');
             verifyBtn.disabled = true;
+            verifyBtn.classList.add('loading');
 
             const phone = phoneInput.value.trim();
             const pin = pinInput.value.trim();
-
             if (!phone || !pin) {
                 showMessage("Please enter phone and PIN", true);
                 verifyBtn.disabled = false;
+                verifyBtn.classList.remove('loading');
                 return;
             }
 
@@ -116,77 +268,60 @@
                     document.getElementById('verify-section').style.display = 'none';
                     video.style.display = 'block';
                     captureBtn.style.display = 'inline-block';
-                    capturedPreview.style.display = 'none';
-
                     stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                     video.srcObject = stream;
-                    showMessage('Camera started. Please capture your face.');
+                    showMessage('✅ Camera started. Please capture your face.');
                 } else {
-                    showMessage('Invalid phone or PIN!', true);
+                    showMessage('❌ Invalid phone or PIN!', true);
                 }
             } catch (err) {
-                showMessage('Error verifying user: ' + err.message, true);
+                showMessage('❌ Error verifying user: ' + err.message, true);
             }
 
             verifyBtn.disabled = false;
+            verifyBtn.classList.remove('loading');
         });
 
         captureBtn.addEventListener('click', () => {
             if (!stream) {
-                showMessage('Webcam not started', true);
+                showMessage('❌ Webcam not started', true);
                 return;
             }
-
-            const phone = phoneInput.value.trim();
-
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+            canvas.getContext('2d').drawImage(video, 0, 0);
             const imageBase64 = canvas.toDataURL('image/png');
 
-            // Show preview
             capturedPreview.src = imageBase64;
             capturedPreview.style.display = 'block';
-
-            showMessage('Uploading face image...');
-
+            showMessage('🔄 Uploading face image...');
             captureBtn.disabled = true;
+            captureBtn.classList.add('loading');
 
             fetch('/register-face', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    phone: phone,
-                    image: imageBase64
-                })
+                body: JSON.stringify({ phone: phoneInput.value.trim(), image: imageBase64 })
             })
             .then(res => res.json())
             .then(data => {
-                showMessage(data.message, !data.message.includes('successfully'));
+                showMessage((data.message.includes('successfully') ? '✅ ' : '❌ ') + data.message, !data.message.includes('successfully'));
                 if (data.message.includes('successfully')) {
-                    // Stop webcam & reset UI after short delay
                     setTimeout(() => {
-                        if (stream) {
-                            stream.getTracks().forEach(track => track.stop());
-                        }
+                        stream.getTracks().forEach(t => t.stop());
                         video.style.display = 'none';
                         captureBtn.style.display = 'none';
                         capturedPreview.style.display = 'none';
                         document.getElementById('verify-section').style.display = 'block';
-                        phoneInput.value = '';
-                        pinInput.value = '';
+                        phoneInput.value = pinInput.value = '';
                         showMessage('');
                     }, 2000);
                 }
             })
-            .catch(err => {
-                showMessage('Error registering face: ' + err.message, true);
-            })
+            .catch(err => showMessage('❌ Error registering face: ' + err.message, true))
             .finally(() => {
                 captureBtn.disabled = false;
+                captureBtn.classList.remove('loading');
             });
         });
     </script>
